@@ -17,5 +17,6 @@ After the sentence has been processed by all extensions, it will be displayed.
 # Notes
 
 You just need Visual Studio with basic C++ support to compile this project.
+
 Replace <PUT ABSOLUTE DIRECTORY TO WRITE TEXTFILE TO HERE> with the directory to write to in extension.cpp, and compile with MSVC.
 
