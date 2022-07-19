@@ -1,19 +1,35 @@
 #include "Extension.h"
+#include <fstream>
+#include <string>
+#include <iostream>
+#include <locale>
+#include <chrono>
+#include <sstream>
+#include <cstdint>
+#include <windows.h>
+#include <initguid.h>
+#include <KnownFolders.h>
+#include <wchar.h>
+#include <ShlObj.h>
+#include <shlwapi.h>
+
+
 
 BOOL WINAPI DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
 {
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-		MessageBoxW(NULL, L"Extension Loaded", L"Example", MB_OK);
-		break;
-	case DLL_PROCESS_DETACH:
-		MessageBoxW(NULL, L"Extension Removed", L"Example", MB_OK);
-		break;
-	}
+	//switch (ul_reason_for_call)
+	//{
+	//case DLL_PROCESS_ATTACH:
+	//	MessageBoxW(NULL, L"Extension Loaded", L"Example", MB_OK);
+	//	break;
+	//case DLL_PROCESS_DETACH:
+	//	MessageBoxW(NULL, L"Extension Removed", L"Example", MB_OK);
+	//	break;
+	//}
 	return TRUE;
 }
 
+#define WRITE_FILE
 //#define COPY_CLIPBOARD
 //#define EXTRA_NEWLINES
 
@@ -29,6 +45,33 @@ BOOL WINAPI DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved
 bool ProcessSentence(std::wstring& sentence, SentenceInfo sentenceInfo)
 {
 	// Your code here...
+std::locale::global(std::locale(""));
+
+
+#ifdef WRITE_FILE
+	if (sentenceInfo["current select"])
+	{
+		/*
+		//doesnt seem to work 
+		std::string path;
+
+		char szPath[MAX_PATH + 1] = {};
+		if (SHGetFolderPathA(NULL, CSIDL_MYDOCUMENTS, NULL, SHGFP_TYPE_CURRENT, szPath) == S_OK)
+		path = PathAddBackslashA(szPath);
+		CoTaskMemFree(szPath);
+		*/
+
+		auto x = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		std::string current_time = std::to_string(x);
+		std::wofstream f("<PUT ABSOLUTE DIRECTORY TO WRITE TEXTFILE TO HERE>" + "\\" + current_time + ".txt");
+		//std::wofstream f(path + current_time + ".txt");
+		f << sentence;
+		f.close();
+
+	}
+	
+#endif //WRITE_FILE
+
 #ifdef COPY_CLIPBOARD
 	// This example extension automatically copies sentences from the hook currently selected by the user into the clipboard.
 	if (sentenceInfo["current select"])
@@ -49,4 +92,5 @@ bool ProcessSentence(std::wstring& sentence, SentenceInfo sentenceInfo)
 	sentence += L"\r\n";
 	return true;
 #endif // EXTRA_NEWLINES
+	return false;
 }
